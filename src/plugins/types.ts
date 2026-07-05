@@ -2027,8 +2027,26 @@ export type PluginCommandContext = {
 export type PluginCommandResult = ReplyPayload & {
   /** Allows the agent session to continue processing after the command. */
   continueAgent?: boolean;
-  /** Suppresses channel fallback replies when the handler already delivered a response. */
+  /**
+   * When `true`, the channel adapter will skip sending a fallback reply.
+   * Use this when the plugin command handler already delivered its own
+   * response directly via the channel API (e.g. Telegram Bot API or
+   * Discord gateway) with custom retry logic or transport guarantees,
+   * and OpenClaw should not generate an additional fallback message.
+   *
+   * Honored by Telegram and Discord native command dispatchers.
+   */
   suppressReply?: boolean;
+};
+
+/**
+ * Narrow result shape for plugin commands that explicitly opt out of
+ * fallback replies. Useful for type-safe return statements in handlers
+ * that deliver responses through channel-native APIs.
+ */
+export type PluginCommandSuppressReply = {
+  /** The channel adapter should not send a fallback reply for this command. */
+  suppressReply: true;
 };
 
 /**
